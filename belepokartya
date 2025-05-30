@@ -1,0 +1,33 @@
+    require_once('fpdf/fpdf.php'); // vagy: require 'vendor/autoload.php'; ha composerrel használod
+
+    class PDF extends FPDF {
+        function KartyaFejlec() {
+            $this->SetFont('Arial', 'B', 16);
+            $this->Cell(0, 10, 'SEO Konferencia', 0, 1, 'C');
+            $this->SetFont('Arial', '', 12);
+            $this->Cell(0, 10, '2025.06.15.', 0, 1, 'C');
+            $this->Ln(5);
+        }
+    }
+
+    // Kártya méret (mm): 90x55
+    $pdf = new PDF('L', 'mm', array(90, 55));
+    $pdf->AddPage();
+    $pdf->KartyaFejlec();
+
+    // Kép beszúrása (30x30 mm)
+    $kep_path = $dir . "/" . $email . ".jpg";
+    $pdf->Image($kep_path, 10, 25, 25, 25);
+
+    // Jelentkező neve és munkahelye
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->SetXY(40, 30);
+    $pdf->Cell(0, 8, "Nev: $nev", 0, 1);
+    $pdf->SetXY(40, 38);
+    $pdf->Cell(0, 8, "Munkahely: $cegnev", 0, 1);
+
+    // PDF mentése
+    $pdf_fajl = $dir . "/" . $email . ".pdf";
+    $pdf->Output('F', $pdf_fajl);
+
+    echo "Belépőkártya PDF sikeresen elkészült.<br>";
