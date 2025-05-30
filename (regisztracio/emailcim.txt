@@ -22,3 +22,8 @@ EOT;
     file_put_contents($txt_fajl, $adatok);
 
     echo "Adatok sikeresen elmentve fájlba.<br>";
+
+
+ha megakarom nézni
+
+cat regisztracio/valaki@email.hu.txt
