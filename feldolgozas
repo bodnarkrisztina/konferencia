@@ -1,0 +1,31 @@
+    // --- E-mail küldés ---
+    $pdf_url = "https://sajatdomain.hu/regisztracio/" . urlencode($email) . ".pdf"; // Állítsd be a valódi domaint!
+    $targy = "SEO Konferencia – Regisztráció megerősítve";
+    $uzenet = <<<EOT
+Kedves $nev!
+
+Köszönjük, hogy jelentkezett a SEO Konferenciára!
+
+A regisztrációja sikeresen megtörtént. A belépőkártyáját az alábbi linken keresztül letöltheti és kinyomtathatja:
+
+$pdf_url
+
+A rendezvény időpontja: 2025.06.15.
+Helyszín: [Add meg a helyszínt]
+
+Kérjük, hozza magával a belépőkártyát a rendezvény napján!
+
+Üdvözlettel,
+SEO Konferencia Szervezői
+EOT;
+
+    $fejlec = "From: info@sajatdomain.hu\r\n";
+    $fejlec .= "Reply-To: info@sajatdomain.hu\r\n";
+    $fejlec .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    // E-mail küldése
+    if (mail($email, $targy, $uzenet, $fejlec)) {
+        echo "Visszaigazoló e-mail elküldve.<br>";
+    } else {
+        echo "Hiba történt az e-mail küldésekor.<br>";
+    }
