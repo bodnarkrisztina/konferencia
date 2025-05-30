@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>SEO Konferencia Jelentkezés</title>
+</head>
+<body>
+<h1>SEO Konferencia – Jelentkezési űrlap</h1>
+<?php
+if (isset($_GET['error'])) {
+    echo "<p style='color:red'>{$_GET['error']}</p>";
+}
+?>
+<form action="feldolgozas.php" method="POST" enctype="multipart/form-data">
+    Név: <input type="text" name="nev" required><br><br>
+    Születési év: <input type="number" name="szul_ev" min="1900" max="2024" required><br><br>
+    Email cím: <input type="email" name="email" required><br><br>
+    Telefonszám: <input type="tel" name="telefon" required><br><br>
+    Munkahely neve: <input type="text" name="cegnev" required><br><br>
+    Munkahely címe: <input type="text" name="cegcim" required><br><br>
+    Munkakör / beosztás: <input type="text" name="munka" required><br><br>
+    Arckép (.jpg, min. 480x480): <input type="file" name="kep" accept=".jpg" required><br><br>
+
+    <!-- CAPTCHA -->
+    Mennyi 3 + 4? (védelmi kérdés): <input type="text" name="captcha" required><br><br>
+
+    <input type="submit" value="Jelentkezés">
+</form>
+</body>
+</html>
