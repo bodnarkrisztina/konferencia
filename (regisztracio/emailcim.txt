@@ -1,0 +1,24 @@
+    // Regisztráció dátuma
+    $datum = date("Y-m-d H:i:s");
+
+    // IP-cím
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    // Tartalom előkészítése
+    $adatok = <<<EOT
+Név: $nev
+Születési év: $szul_ev
+E-mail: $email
+Telefonszám: $telefon
+Munkahely neve: $cegnev
+Munkahely címe: $cegcim
+Munkakör / Beosztás: $munka
+
+Regisztráció ideje: $datum
+IP-cím: $ip
+EOT;
+
+    // Mentés fájlba
+    file_put_contents($txt_fajl, $adatok);
+
+    echo "Adatok sikeresen elmentve fájlba.<br>";
