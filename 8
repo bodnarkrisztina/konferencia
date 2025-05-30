@@ -1,0 +1,48 @@
+<?php
+// Egyszerű jelszóvédelem
+$helyes_jelszo = "admin123";
+
+if (!isset($_POST['jelszo'])) {
+    echo '
+    <form method="POST">
+        Admin jelszó: <input type="password" name="jelszo">
+        <input type="submit" value="Belépés">
+    </form>';
+    exit;
+}
+
+if ($_POST['jelszo'] !== $helyes_jelszo) {
+    echo "Hibás jelszó!";
+    exit;
+}
+
+// Jelentkezések listázása
+$dir = __DIR__ . "/regisztracio";
+$fajlok = glob($dir . "/*.txt");
+
+echo "<h2>Regisztrált jelentkezők (" . count($fajlok) . " fő)</h2>";
+echo "<table border='1' cellpadding='5'>";
+echo "<tr><th>Név</th><th>Munkahely</th><th>Email</th></tr>";
+
+$adatok_osszefoglalva = [];
+
+foreach ($fajlok as $fajl) {
+    $tartalom = file_get_contents($fajl);
+    preg_match("/Név: (.*)/", $tartalom, $nev);
+    preg_match("/Munkahely neve: (.*)/", $tartalom, $ceg);
+    preg_match("/E-mail: (.*)/", $tartalom, $mail);
+
+    echo "<tr><td>{$nev[1]}</td><td>{$ceg[1]}</td><td>{$mail[1]}</td></tr>";
+
+    // Jelenléti ívhez
+    $adatok_osszefoglalva[] = [$nev[1], $ceg[1]];
+}
+
+echo "</table>";
+
+// Jelenléti ív generálása
+file_put_contents("admin_adatok.tmp", serialize($adatok_osszefoglalva));
+echo "<br><form method='POST' action='generate_attendance.php'>
+        <input type='submit' value='Jelenléti ív PDF letöltése'>
+      </form>";
+?>
