@@ -1,0 +1,60 @@
+<?php
+date_default_timezone_set("Europe/Budapest");
+
+// Ellenőrizzük, hogy POST metódus jött-e
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Űrlapból jövő adatok beolvasása
+    $nev = trim($_POST["nev"]);
+    $szul_ev = trim($_POST["szul_ev"]);
+    $email = trim($_POST["email"]);
+    $telefon = trim($_POST["telefon"]);
+    $cegnev = trim($_POST["cegnev"]);
+    $cegcim = trim($_POST["cegcim"]);
+    $munka = trim($_POST["munka"]);
+    $captcha = trim($_POST["captcha"]);
+
+    // CAPTCHA ellenőrzés (3 + 4 = 7)
+    if ($captcha != "7") {
+        header("Location: index.html?error=Hibás CAPTCHA válasz!");
+        exit();
+    }
+
+    // Ellenőrzés: minden mező kitöltve?
+    if (empty($nev) || empty($szul_ev) || empty($email) || empty($telefon) || empty($cegnev) || empty($cegcim) || empty($munka)) {
+        header("Location: index.html?error=Minden mezőt ki kell tölteni!");
+        exit();
+    }
+
+    // E-mail formátum ellenőrzés
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        header("Location: index.html?error=Hibás e-mail formátum!");
+        exit();
+    }
+
+    // Regisztrációs könyvtár ellenőrzése
+    $dir = __DIR__ . "/regisztracio";
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    // Ellenőrizzük, hogy az adott e-mail már létezik-e
+    $txt_fajl = $dir . "/" . $email . ".txt";
+    if (file_exists($txt_fajl)) {
+        header("Location: index.html?error=Ezzel az e-mail címmel már regisztráltak!");
+        exit();
+    }
+
+    // Túljelentkezés ellenőrzése (teszt módban 5 fő)
+    $letezo_fajlok = glob($dir . "/*.txt");
+    if (count($letezo_fajlok) >= 5) {
+        echo "<h2>Sajnáljuk, a jelentkezési létszám betelt!</h2>";
+        exit();
+    }
+
+    // További lépések (képellenőrzés, mentés, PDF, email) későbbi pontban
+    echo "Alapellenőrzés sikeres. Folytathatjuk a kép feldolgozásával.";
+} else {
+    echo "Érvénytelen hozzáférés!";
+}
+?>
