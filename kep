@@ -1,0 +1,53 @@
+    // Kép ellenőrzése
+    if (!isset($_FILES['kep']) || $_FILES['kep']['error'] !== UPLOAD_ERR_OK) {
+        header("Location: index.html?error=Hiba a kép feltöltésekor!");
+        exit();
+    }
+
+    $kep_eredeti = $_FILES['kep']['tmp_name'];
+    $kep_tipus = mime_content_type($kep_eredeti);
+
+    if ($kep_tipus !== 'image/jpeg') {
+        header("Location: index.html?error=Csak .jpg képet fogadunk el!");
+        exit();
+    }
+
+    // Kép méretének ellenőrzése
+    list($szelesseg, $magassag) = getimagesize($kep_eredeti);
+
+    if ($szelesseg < 480 || $magassag < 480) {
+        header("Location: index.html?error=A képnek legalább 480x480 pixel méretűnek kell lennie!");
+        exit();
+    }
+
+    // Kép megnyitása
+    $kep = imagecreatefromjpeg($kep_eredeti);
+
+    // Négyzet kivágás középről
+    $meret = min($szelesseg, $magassag);
+    $x = ($szelesseg - $meret) / 2;
+    $y = ($magassag - $meret) / 2;
+
+    $negyzetes = imagecreatetruecolor($meret, $meret);
+    imagecopy($negyzetes, $kep, 0, 0, $x, $y, $meret, $meret);
+
+    // Ha túl nagy (pl. 1000x1000), átméretezzük 640x640-re
+    $cel_meret = 640;
+    if ($meret > $cel_meret) {
+        $kicsinyitett = imagecreatetruecolor($cel_meret, $cel_meret);
+        imagecopyresampled($kicsinyitett, $negyzetes, 0, 0, 0, 0, $cel_meret, $cel_meret, $meret, $meret);
+        $kesz_kep = $kicsinyitett;
+    } else {
+        $kesz_kep = $negyzetes;
+    }
+
+    // Mentés jpg-ként a regisztracio mappába
+    $kep_cel_utvonal = $dir . "/" . $email . ".jpg";
+    imagejpeg($kesz_kep, $kep_cel_utvonal, 90); // 90% minőség
+
+    // Takarítás
+    imagedestroy($kep);
+    imagedestroy($negyzetes);
+    if (isset($kicsinyitett)) imagedestroy($kicsinyitett);
+
+    echo "Kép sikeresen feldolgozva.<br>";
